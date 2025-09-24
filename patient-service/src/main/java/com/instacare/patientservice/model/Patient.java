@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,7 +43,7 @@ public class Patient {
     private String gender;
 
     @NotNull
-    private LocalDate registered_date;
+    private LocalDate registeredDate;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -108,6 +110,14 @@ public class Patient {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public LocalDate getRegisteredDate(){
+        return registeredDate;
+    }
+
+    public void setRegisteredDate(LocalDate registeredDate){
+        this.registeredDate = registeredDate;
     }
 
 }

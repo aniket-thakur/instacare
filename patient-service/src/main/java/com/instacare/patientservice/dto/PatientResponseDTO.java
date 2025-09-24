@@ -5,6 +5,9 @@ public class PatientResponseDTO {
     private String firstName;
     private String lastName;
     private String email;
+    private String address;
+    private String mobileNumber;
+    private String gender;
 
     public String getId() {
         return id;
@@ -33,11 +36,6 @@ public class PatientResponseDTO {
     public String getGender() {
         return gender;
     }
-
-    private String address;
-    private String mobileNumber;
-    private String gender;
-
 
     public void setId(String id) {
         this.id = id;

@@ -1,18 +1,17 @@
 package com.instacare.patientservice.controller;
 
+import com.instacare.patientservice.dto.PatientRequestDTO;
 import com.instacare.patientservice.dto.PatientResponseDTO;
 import com.instacare.patientservice.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/patients")
+@RequestMapping("/v1/patient")
 public class PatientController {
     private PatientService patientService;
 
@@ -24,7 +23,13 @@ public class PatientController {
     public ResponseEntity<List<PatientResponseDTO>> getAllPatients() {
         List<PatientResponseDTO> patients = patientService.getPatients();
         System.out.printf("getAllPatients: %d\n", patients.size());
-        return new ResponseEntity<>(patients, HttpStatus.OK);
-//        return ResponseEntity.ok().body(patients);
+//        return new ResponseEntity<>(patients, HttpStatus.OK);
+        return ResponseEntity.ok().body(patients);
+    }
+
+    @PostMapping
+    public ResponseEntity<PatientResponseDTO> createPatient(@Valid @RequestBody PatientRequestDTO patientRequestDTO) {
+        PatientResponseDTO patient = patientService.createPatient(patientRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(patient);
     }
 }
