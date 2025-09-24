@@ -1,5 +1,6 @@
 package com.instacare.patientservice.dto;
 
+import com.instacare.patientservice.dto.validations.CreatePatientValidationGroup;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -23,7 +24,7 @@ public class PatientRequestDTO {
     @NotBlank(message = "Mobile number is required")
     private String mobileNumber;
 
-    @NotBlank(message = "Registered date is required")
+    @NotBlank(groups = CreatePatientValidationGroup.class ,message = "Registered date is required")
     private String registeredDate;
 
     @NotBlank(message = "Address is required")
