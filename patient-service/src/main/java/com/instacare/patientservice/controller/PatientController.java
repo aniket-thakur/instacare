@@ -4,6 +4,8 @@ import com.instacare.patientservice.dto.PatientRequestDTO;
 import com.instacare.patientservice.dto.PatientResponseDTO;
 import com.instacare.patientservice.dto.validations.CreatePatientValidationGroup;
 import com.instacare.patientservice.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/patient")
+@Tag(name="Patient", description = "CRUD API for managing patients") //springdoc.org
 public class PatientController {
     private PatientService patientService;
 
@@ -24,6 +27,7 @@ public class PatientController {
     }
 
     @GetMapping
+    @Operation(summary = "Get patients")
     public ResponseEntity<List<PatientResponseDTO>> getAllPatients() {
         List<PatientResponseDTO> patients = patientService.getPatients();
         System.out.printf("getAllPatients: %d\n", patients.size());
@@ -32,6 +36,7 @@ public class PatientController {
     }
 
     @PostMapping
+    @Operation(summary = "Create new Patient")
     public ResponseEntity<PatientResponseDTO> createPatient(
             @Validated({Default.class, CreatePatientValidationGroup.class}) @RequestBody PatientRequestDTO patientRequestDTO) {
 
@@ -40,6 +45,7 @@ public class PatientController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update details of patient")
     public ResponseEntity<PatientResponseDTO> updatePatient(
             /*
             @Validated({Default.class}) -> tells spring to validate the request with the default validation defined
@@ -48,5 +54,12 @@ public class PatientController {
              @PathVariable UUID id,@Validated({Default.class}) @RequestBody PatientRequestDTO patientRequestDTO) {
         PatientResponseDTO patient = patientService.updatePatient(id,patientRequestDTO);
         return ResponseEntity.ok().body(patient);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete patient")
+    public ResponseEntity<Void> deletePatient(@PathVariable UUID id){
+        patientService.deletePatient(id);
+        return ResponseEntity.noContent().build();
     }
 }
