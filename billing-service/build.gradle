@@ -1,0 +1,57 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.6'
+	id 'io.spring.dependency-management' version '1.1.7'
+    id("com.google.protobuf") version "0.9.5" // Protobuf plugin for Gradle
+}
+
+group = 'com.instacare'
+version = '0.0.1-SNAPSHOT'
+description = 'billing-service'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation("io.grpc:grpc-netty-shaded:1.75.0")
+    implementation("io.grpc:grpc-protobuf:1.75.0")
+    implementation("io.grpc:grpc-stub:1.75.0")
+    implementation("io.github.lognet:grpc-spring-boot-starter:5.2.0")
+    implementation("com.google.protobuf:protobuf-java:4.32.1")
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+}
+
+protobuf {
+    protoc {
+        // Use Protoc plugin with the system architecture (handled by OS detection)
+        artifact = "com.google.protobuf:protoc:3.25.5"
+    }
+
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.68.1"  // gRPC plugin
+        }
+    }
+
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}  // Add gRPC plugin to each task
+        }
+    }
+}
+
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
