@@ -12,12 +12,13 @@ COPY gradle/ gradle/
 # Make gradlew executable
 RUN chmod +x gradlew
 
+RUN apk add libc6-compat
 
 # Copy source code after dependencies are cached
 COPY src ./src
 
 #Run gradle build after the source code is copied
-RUN ./gradlew clean build --stacktrace --info
+RUN ./gradlew clean build
 
 #Set up the runner image
 FROM openjdk:21-jdk AS runner

@@ -57,7 +57,7 @@ protobuf {
     }
 }
 
-// This is CRITICAL - ensures generated code is in the right place
+
 sourceSets {
     main {
         java {
@@ -67,7 +67,7 @@ sourceSets {
     }
 }
 
-// Ensures proto generation happens before compilation
+// proto generation happens before compilation
 compileJava {
     dependsOn 'generateProto'
 }

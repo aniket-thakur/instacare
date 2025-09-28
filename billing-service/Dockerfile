@@ -3,15 +3,21 @@ FROM gradle:jdk21-alpine AS builder
 
 WORKDIR /app
 
-# Copy the Gradle build files first (caching dependencies)
-COPY . .
+# Copy the Gradle build files first to cache dependencies
+COPY build.gradle .
+COPY settings.gradle .
+COPY gradlew .
+COPY gradle/ gradle/
 
 # Make gradlew executable
 RUN chmod +x gradlew
 
 RUN apk add libc6-compat
 
-RUN ./gradlew clean build
+COPY src ./src
+
+# Do clean build only if source code or build.gradle changes
+RUN ./gradlew clean build  --no-daemon
 
 # Set up the runner image
 FROM openjdk:21-jdk AS runner

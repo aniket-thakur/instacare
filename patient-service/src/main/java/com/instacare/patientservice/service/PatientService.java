@@ -4,6 +4,7 @@ import com.instacare.patientservice.dto.PatientRequestDTO;
 import com.instacare.patientservice.dto.PatientResponseDTO;
 import com.instacare.patientservice.exceptions.EmailAlreadyExistsException;
 import com.instacare.patientservice.exceptions.UserNotFoundException;
+import com.instacare.patientservice.grpc.BillingServiceGrpcClient;
 import com.instacare.patientservice.mapper.PatientMapper;
 import com.instacare.patientservice.model.Patient;
 import com.instacare.patientservice.repository.PatientRepository;
@@ -15,10 +16,13 @@ import java.util.UUID;
 
 @Service
 public class PatientService {
-    private final PatientRepository patientRepository;
 
-    public PatientService(PatientRepository patientRepository) {
+    private final PatientRepository patientRepository;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
+
+    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
         this.patientRepository = patientRepository;
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
     }
 
     // get all patients
@@ -36,6 +40,10 @@ public class PatientService {
             throw new EmailAlreadyExistsException(patientRequestDTO.getEmail());
         }
         Patient patient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+        // call billingService to create user billing account
+        billingServiceGrpcClient.createBillingAccount(patient.getId().toString(), patient.getName(),
+                patient.getEmail(), patient.getMobileNumber(), patient.getGender());
+
         return PatientMapper.toPatientResponseDTO(patient);
     }
 
