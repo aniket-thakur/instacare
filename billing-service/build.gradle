@@ -18,31 +18,38 @@ java {
 repositories {
 	mavenCentral()
 }
+// consistent versions
+ext {
+    grpcVersion = '1.75.0'
+    protobufVersion = '4.32.1'
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation("io.grpc:grpc-netty-shaded:1.75.0")
-    implementation("io.grpc:grpc-protobuf:1.75.0")
-    implementation("io.grpc:grpc-stub:1.75.0")
     implementation("io.github.lognet:grpc-spring-boot-starter:5.2.0")
-    implementation("com.google.protobuf:protobuf-java:4.32.1")
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+    // gRPC dependencies - all IMPLEMENTATION scope
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
 }
-
+def generatedFilesBaseDir = "${buildDir}/generated/source/proto"
 protobuf {
     protoc {
-        // Use Protoc plugin with the system architecture (handled by OS detection)
-        artifact = "com.google.protobuf:protoc:3.25.5"
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+    clean {
+        delete generatedFilesBaseDir
     }
 
     plugins {
         grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.68.1"  // gRPC plugin
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
         }
     }
-
     generateProtoTasks {
         all()*.plugins {
             grpc {}  // Add gRPC plugin to each task
@@ -50,6 +57,20 @@ protobuf {
     }
 }
 
+// This is CRITICAL - ensures generated code is in the right place
+sourceSets {
+    main {
+        java {
+            srcDir "${generatedFilesBaseDir}/main/java"
+            srcDir "${generatedFilesBaseDir}/main/grpc"
+        }
+    }
+}
+
+// Ensures proto generation happens before compilation
+compileJava {
+    dependsOn 'generateProto'
+}
 
 
 tasks.named('test') {

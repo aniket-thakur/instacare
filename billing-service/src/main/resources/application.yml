@@ -2,7 +2,7 @@ spring:
   application:
     name: billing-service
 server:
-  port : 4444
+  port: 4001
 grpc:
   port: 6565
   enable-reflection: true

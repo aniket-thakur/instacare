@@ -1,0 +1,25 @@
+# Ignore build outputs
+build/
+.gradle/
+out/
+
+# Ignore IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+
+# DON'T ignore these important files:
+# !src/
+# !build.gradle
+# !settings.gradle
+# !gradlew
+# !gradle/
