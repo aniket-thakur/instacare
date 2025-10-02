@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id("com.google.protobuf") version "0.9.5" // Protobuf plugin for Gradle
+}
+
+group = 'com.instacare'
+version = '0.0.1-SNAPSHOT'
+description = 'analytics-service'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    grpcVersion = '1.75.0'
+    protobufVersion = '4.32.1'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    //    kafka
+    implementation("org.springframework.kafka:spring-kafka:4.0.0-M4")
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+    clean {
+        delete generatedFilesBaseDir
+    }
+
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}  // Add gRPC plugin to each task
+        }
+    }
+}
+
+
+// proto generation happens before compilation
+compileJava {
+    dependsOn 'generateProto'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
